@@ -1,3 +1,3 @@
-## eosio-uri-redirect
+## eosio.to
 
-[https://greymass.github.io/eosio-uri-redirect/](https://greymass.github.io/eosio-uri-redirect)
+[https://greymass.github.io/eosio.to/](https://greymass.github.io/eosio.to)

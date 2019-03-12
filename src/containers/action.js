@@ -29,7 +29,7 @@ const eos = eosjs({
   httpEndpoint: 'https://eos.greymass.com'
 });
 
-const uriProxy = 'http://localhost:3000/';
+const uriProxy = 'http://eosio.to/';
 
 const initialState = {
   abi: false,
@@ -174,7 +174,7 @@ class ActionContainer extends Component {
     QRCode.toCanvas(canvas, uriFormatHack, function (error) {
       if (error) console.error(error)
     });
-    // window.location.replace(`eosio://${uriParts[1]}`);
+    window.location.replace(`eosio://${uriParts[1]}`);
     this.setState({
       action: action.name,
       callback: {
@@ -265,7 +265,7 @@ class ActionContainer extends Component {
                     as="a"
                     content="Edit in URI Builder"
                     color="green"
-                    href={`https://greymass.github.io/eosio-uri-redirect/${uriParts[1]}`}
+                    href={`https://greymass.github.io/eosio.to/${uriParts[1]}`}
                   />
                 </Segment>
                 <Form>

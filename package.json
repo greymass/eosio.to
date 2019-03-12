@@ -1,12 +1,13 @@
 {
-  "name": "eosio-uri-redirect",
+  "name": "eosio.to",
   "version": "0.0.1",
-  "homepage": "https://github.com/greymass/eosio-uri-redirect",
+  "homepage": "https://eosio.to",
   "private": true,
   "dependencies": {
     "eosio-uri": "0.0.3",
     "eosjs": "^16.0.9",
     "gh-pages": "^2.0.1",
+    "prism-react-renderer": "^0.1.5",
     "qrcode": "^1.3.3",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
@@ -19,7 +20,8 @@
     "semantic-ui": "^2.4.2"
   },
   "scripts": {
-    "deploy": "npm run build && ln -s index.html build/404.html && gh-pages -d build",
+    "predeploy": "npm run build",
+    "deploy": "cp CNAME build/CNAME && ln -s index.html build/404.html && gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build ",
     "test": "react-scripts test --env=jsdom",

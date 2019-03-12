@@ -1,6 +1,6 @@
 {
-  "short_name": "eosio-uri-redirect",
-  "name": "eosio-uri-redirect",
+  "short_name": "eosio.to",
+  "name": "eosio.to",
   "start_url": "./index.html",
   "display": "standalone",
   "theme_color": "#000000",
