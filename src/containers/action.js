@@ -265,7 +265,7 @@ class ActionContainer extends Component {
                     as="a"
                     content="Edit in URI Builder"
                     color="green"
-                    href={`https://greymass.github.io/eosio.to/${uriParts[1]}`}
+                    href={`https://greymass.github.io/eosio-uri-builder/${uriParts[1]}`}
                   />
                 </Segment>
                 <Form>
