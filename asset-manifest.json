@@ -1,14 +1,14 @@
 {
-  "main.css": "/greymass/eosio-uri-redirect/static/css/main.cd736b79.chunk.css",
-  "main.js": "/greymass/eosio-uri-redirect/static/js/main.2d86b553.chunk.js",
-  "main.js.map": "/greymass/eosio-uri-redirect/static/js/main.2d86b553.chunk.js.map",
-  "static/js/1.1646f1eb.chunk.js": "/greymass/eosio-uri-redirect/static/js/1.1646f1eb.chunk.js",
-  "static/js/1.1646f1eb.chunk.js.map": "/greymass/eosio-uri-redirect/static/js/1.1646f1eb.chunk.js.map",
-  "runtime~main.js": "/greymass/eosio-uri-redirect/static/js/runtime~main.c0b7bc6e.js",
-  "runtime~main.js.map": "/greymass/eosio-uri-redirect/static/js/runtime~main.c0b7bc6e.js.map",
-  "static/media/semantic.min.css": "/greymass/eosio-uri-redirect/static/media/icons.af7ae505.woff2",
-  "static/css/main.cd736b79.chunk.css.map": "/greymass/eosio-uri-redirect/static/css/main.cd736b79.chunk.css.map",
-  "index.html": "/greymass/eosio-uri-redirect/index.html",
-  "precache-manifest.6878411f31245de90f054fd5b9066a9a.js": "/greymass/eosio-uri-redirect/precache-manifest.6878411f31245de90f054fd5b9066a9a.js",
-  "service-worker.js": "/greymass/eosio-uri-redirect/service-worker.js"
+  "main.css": "/eosio-uri-redirect/static/css/main.776e9c3f.chunk.css",
+  "main.js": "/eosio-uri-redirect/static/js/main.3a93ca72.chunk.js",
+  "main.js.map": "/eosio-uri-redirect/static/js/main.3a93ca72.chunk.js.map",
+  "static/js/1.3aeb19ec.chunk.js": "/eosio-uri-redirect/static/js/1.3aeb19ec.chunk.js",
+  "static/js/1.3aeb19ec.chunk.js.map": "/eosio-uri-redirect/static/js/1.3aeb19ec.chunk.js.map",
+  "runtime~main.js": "/eosio-uri-redirect/static/js/runtime~main.b21a81ac.js",
+  "runtime~main.js.map": "/eosio-uri-redirect/static/js/runtime~main.b21a81ac.js.map",
+  "static/media/semantic.min.css": "/eosio-uri-redirect/static/media/icons.674f50d2.eot",
+  "static/css/main.776e9c3f.chunk.css.map": "/eosio-uri-redirect/static/css/main.776e9c3f.chunk.css.map",
+  "index.html": "/eosio-uri-redirect/index.html",
+  "precache-manifest.5769cb76f4f6d1a383e316f4211f2392.js": "/eosio-uri-redirect/precache-manifest.5769cb76f4f6d1a383e316f4211f2392.js",
+  "service-worker.js": "/eosio-uri-redirect/service-worker.js"
 }
