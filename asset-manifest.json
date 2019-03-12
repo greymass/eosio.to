@@ -1,14 +1,14 @@
 {
-  "main.css": "/eosio-uri-redirect/static/css/main.776e9c3f.chunk.css",
-  "main.js": "/eosio-uri-redirect/static/js/main.3a93ca72.chunk.js",
-  "main.js.map": "/eosio-uri-redirect/static/js/main.3a93ca72.chunk.js.map",
-  "static/js/1.3aeb19ec.chunk.js": "/eosio-uri-redirect/static/js/1.3aeb19ec.chunk.js",
-  "static/js/1.3aeb19ec.chunk.js.map": "/eosio-uri-redirect/static/js/1.3aeb19ec.chunk.js.map",
-  "runtime~main.js": "/eosio-uri-redirect/static/js/runtime~main.b21a81ac.js",
-  "runtime~main.js.map": "/eosio-uri-redirect/static/js/runtime~main.b21a81ac.js.map",
-  "static/media/semantic.min.css": "/eosio-uri-redirect/static/media/icons.674f50d2.eot",
-  "static/css/main.776e9c3f.chunk.css.map": "/eosio-uri-redirect/static/css/main.776e9c3f.chunk.css.map",
-  "index.html": "/eosio-uri-redirect/index.html",
-  "precache-manifest.5769cb76f4f6d1a383e316f4211f2392.js": "/eosio-uri-redirect/precache-manifest.5769cb76f4f6d1a383e316f4211f2392.js",
-  "service-worker.js": "/eosio-uri-redirect/service-worker.js"
+  "main.css": "/eosio.to/static/css/main.8d18cbd0.chunk.css",
+  "main.js": "/eosio.to/static/js/main.ea9eb0aa.chunk.js",
+  "main.js.map": "/eosio.to/static/js/main.ea9eb0aa.chunk.js.map",
+  "static/js/1.e35ace95.chunk.js": "/eosio.to/static/js/1.e35ace95.chunk.js",
+  "static/js/1.e35ace95.chunk.js.map": "/eosio.to/static/js/1.e35ace95.chunk.js.map",
+  "runtime~main.js": "/eosio.to/static/js/runtime~main.6ef80fca.js",
+  "runtime~main.js.map": "/eosio.to/static/js/runtime~main.6ef80fca.js.map",
+  "static/media/semantic.min.css": "/eosio.to/static/media/icons.674f50d2.eot",
+  "static/css/main.8d18cbd0.chunk.css.map": "/eosio.to/static/css/main.8d18cbd0.chunk.css.map",
+  "index.html": "/eosio.to/index.html",
+  "precache-manifest.39631033e4ef9179de0752bbb21440ac.js": "/eosio.to/precache-manifest.39631033e4ef9179de0752bbb21440ac.js",
+  "service-worker.js": "/eosio.to/service-worker.js"
 }
