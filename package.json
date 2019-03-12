@@ -23,7 +23,7 @@
     "predeploy": "npm run build",
     "deploy": "cp CNAME build/CNAME && ln -s index.html build/404.html && gh-pages -d build",
     "start": "react-scripts start",
-    "build": "react-scripts build ",
+    "build": "react-scripts build && cp _redirects build/_redirects",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
