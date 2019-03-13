@@ -12,6 +12,8 @@ import {
   Form,
   Grid,
   Header,
+  Icon,
+  Label,
   Message,
   Segment,
   Select,
@@ -171,10 +173,10 @@ class ActionContainer extends Component {
     });
     const canvas = this.refs.canvas;
     const ctx = canvas.getContext("2d");
-    QRCode.toCanvas(canvas, uriFormatHack, function (error) {
+    QRCode.toCanvas(canvas, uriFormatHack, { scale: 8 }, function (error) {
       if (error) console.error(error)
     });
-    window.location.replace(`eosio://${uriParts[1]}`);
+    // window.location.replace(`eosio://${uriParts[1]}`);
     this.setState({
       action: action.name,
       callback: {
@@ -223,48 +225,91 @@ class ActionContainer extends Component {
     } = decoded;
     return (
       <Container className="App" style={{ paddingTop: "1em" }}>
-        <Segment basic loading={loading}>
-          <Grid>
+        <Segment attached="top" inverted color="blue">
+          <Header size="large">
+            <Icon name="linkify" />
+            <Header.Content>
+              eosio.to
+              <Header.Subheader style={{ color: '#ffffff' }}>
+                Signing Request Processing Service
+              </Header.Subheader>
+            </Header.Content>
+          </Header>
+        </Segment>
+        <Segment attached loading={loading}>
+          <Grid stackable>
             <Grid.Row>
               <Grid.Column width={10}>
-                <Segment color="green">
-                  <Header size="large">
-                    A Signing Request has been triggered.
-                    <Header.Subheader>
-                      Not working? Make sure you have an EEP-6 compatible wallet installed.
-                    </Header.Subheader>
+                {(!loading)
+                  ? (
+                    <Segment>
+                      <Header size="large">
+                        <Icon name="info circle" style={{ verticalAlign: 'top' }} />
+                        <Header.Content>
+                          A Signing Request has been triggered.
+                          <Header.Subheader style={{ padding: '1em 0' }}>
+                            <Label as='a' href={`eosio:${uriParts[1]}`}>
+                              <Icon name="linkify" />
+                              eosio:{uriParts[1]}
+                            </Label>
+                          </Header.Subheader>
+                          <Header.Subheader>
+                            Not working? Make sure you have an
+                            {' '}
+                            <a href="#wallets">
+                              EEP-6 compatible wallet
+                            </a>
+                            {' '}
+                            installed.
+                          </Header.Subheader>
+                        </Header.Content>
+                      </Header>
+                    </Segment>
+                  )
+                  : false
+                }
+                <Segment secondary>
+                  <Header>
+                    Request Details
                   </Header>
-                </Segment>
-                <Segment>
-                  This signing request contains {actions.length} action(s).
-                </Segment>
-                {actions.map((action) => (
-                  <Table definition>
-                    <Table.Body>
-                      {Object.keys(action).map((param) => (
-                        <Table.Row>
-                          <Table.Cell>{param}</Table.Cell>
-                          <Table.Cell><pre>{JSON.stringify(action[param], null, 2)}</pre></Table.Cell>
-                        </Table.Row>
-                      ))}
-                    </Table.Body>
+                  <p>This signing request contains {actions.length} action(s).</p>
+                  {actions.map((action) => (
+                    <Table definition>
+                      <Table.Body>
+                        {Object.keys(action).map((param) => (
+                          <Table.Row>
+                            <Table.Cell>{param}</Table.Cell>
+                            <Table.Cell><pre>{JSON.stringify(action[param], null, 2)}</pre></Table.Cell>
+                          </Table.Row>
+                        ))}
+                      </Table.Body>
 
-                  </Table>
-                ))}
+                    </Table>
+                  ))}
+                </Segment>
               </Grid.Column>
               <Grid.Column width={6}>
                 <Header>
                   QR Code
+                  <Header.Subheader>
+                    Scanning this QR code with a EEP-6 enabled mobile wallet will prompt to sign this request.
+                  </Header.Subheader>
                 </Header>
-                <canvas ref="canvas" />
-                <Header>
-                  Links
-                </Header>
-                <Segment basic>
+                <Container textAlign="center">
+                  <canvas ref="canvas" />
+                </Container>
+                <Segment stacked>
+                  <Header>
+                    Modify & Share
+                    <Header.Subheader>
+                      Edit this signing request in the eosio-uri-builder or copy one of the links below to share.
+                    </Header.Subheader>
+                  </Header>
                   <Button
                     as="a"
                     content="Edit in URI Builder"
                     color="green"
+                    icon="edit"
                     href={`https://greymass.github.io/eosio-uri-builder/${uriParts[1]}`}
                   />
                 </Segment>
@@ -279,8 +324,9 @@ class ActionContainer extends Component {
                     </Form.Field>
                     <Button
                       as="a"
-                      content="Trigger"
+                      content="Open"
                       color="blue"
+                      icon="external"
                       href={`eosio://${uriParts[1]}`}
                       size="small"
                     />
@@ -302,8 +348,9 @@ class ActionContainer extends Component {
                     </Form.Field>
                     <Button
                       as="a"
-                      content="Trigger"
+                      content="Open"
                       color="blue"
+                      icon="external"
                       href={`/${uriParts[1]}`}
                       size="small"
                     />
@@ -319,6 +366,22 @@ class ActionContainer extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
+        </Segment>
+        <Segment attached="bottom" id="wallets">
+          <Header>
+            EEP-6 Compatible Wallets
+            <Header.Subheader>
+              The <a href="$">EEP-6 standard</a> is a communication layer any wallet can adopt. Encourage your favorite wallet developer to implement this standard or download one of the wallets below.
+            </Header.Subheader>
+          </Header>
+        </Segment>
+        <Segment basic style={{ padding: '2em 0 '}} textAlign="center">
+          <Header size="small">
+            eosio.to
+            <Header.Subheader>
+              a <a href="https://greymass.com">greymass</a> project
+            </Header.Subheader>
+          </Header>
         </Segment>
       </Container>
     );
