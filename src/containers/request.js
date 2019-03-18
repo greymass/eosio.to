@@ -6,23 +6,24 @@ import QRCode from 'qrcode';
 import {
   Button,
   Container,
-  Checkbox,
-  Divider,
-  Dropdown,
   Form,
   Grid,
   Header,
-  Icon,
-  Label,
-  Message,
   Segment,
-  Select,
-  Tab,
-  Table,
   TextArea
 } from 'semantic-ui-react';
 
 import ReactJson from 'react-json-view';
+
+import GlobalHeader from '../components/Global/Header';
+import GlobalFooter from '../components/Global/Footer';
+import GlobalWallets from '../components/Global/Wallets';
+
+import RequestDetailBlockchain from '../components/Request/Detail/Blockchain';
+import RequestDetailActions from '../components/Request/Detail/Actions';
+import RequestDetailCallback from '../components/Request/Detail/Callback';
+import RequestHandlerURIBuilder from '../components/Request/Handler/URIBuilder';
+import RequestMessageTriggered from '../components/Request/Message/Triggered';
 
 const { SigningRequest } = require("eosio-uri");
 
@@ -44,6 +45,8 @@ const initialState = {
     background: false,
     url: '',
   },
+  chain: undefined,
+  chainId: undefined,
   contract: 'eosio.token',
   decoded: {
     actions: [],
@@ -57,14 +60,7 @@ const initialState = {
   uriParts: []
 };
 
-const knownContracts = [
-  'eosio',
-  'eosio.token',
-  'eosio.forum',
-];
-
 // opts for the signing request
-const util = require('util');
 const zlib = require('zlib');
 const opts = {
   // string compression
@@ -84,13 +80,26 @@ const opts = {
   }
 }
 
-class ActionContainer extends Component {
+const chainAliases = [
+  ['RESERVED'], // 0x00
+  ['EOS','aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'], // 0x01
+  ['TELOS','4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11'], // 0x02
+  ['JUNGLE','038f4b0fc8ff18a4f0842a8f0564611f6e96e8535901dd45e43ac8691a1c4dca'], // 0x03
+  ['KYLIN','5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191'], // 0x04
+  ['WORBLI','73647cde120091e0a4b85bced2f3cfdb3041e266cbbe95cee59b73235a1b3b6f'], // 0x05
+  ['BOS','d5a3d18fbb3c084e3b1f3fa98c21014b5f3db536cc15d08f9f6479517c6a3d86'], // 0x06
+  ['MEETONE','cfe6486a83bad4962f232d48003b1824ab5665c36778141034d75e57b956e422'], // 0x07
+  ['INSIGHTS','b042025541e25a472bffde2d62edd457b7e70cee943412b1ea0f044f88591664'], // 0x08
+  ['BEOS','b912d19a6abd2b1b05611ae5be473355d64d95aeff0c09bedc8c166cd6468fe4'], // 0x09
+];
+
+
+class RequestContainer extends Component {
   constructor(props) {
     super(props)
     this.state = Object.assign({}, initialState);
   }
   componentWillMount() {
-    const uriState = {};
     const { decode, props } = this;
     const { match } = props;
     if (match && match.params && match.params.uri) {
@@ -113,7 +122,6 @@ class ActionContainer extends Component {
       this.state.contract !== nextState.contract
     ) {
       eos.getAbi(nextState.contract).then((result) => {
-        console.log(result.abi)
         this.setState({ abi: result.abi });
       });
     }
@@ -143,6 +151,15 @@ class ActionContainer extends Component {
     document.execCommand('copy');
     ref.focus();
   };
+  getChain = (decoded) => {
+    const [chainIdType, chainIdValue] = decoded.data.chain_id;
+    switch (chainIdType) {
+      case "chain_alias":
+      default: {
+        return chainAliases[chainIdValue];
+      }
+    }
+  }
   decode = async (uri = false) => {
     const {
       authorization
@@ -152,8 +169,8 @@ class ActionContainer extends Component {
       uriFormatHack = uriFormatHack.replace(':', '://');
     }
     const uriParts = uriFormatHack.split("://");
-    console.log(uriParts)
     const decoded = SigningRequest.from(uriFormatHack, opts);
+    const [chain, chainId] = this.getChain(decoded);
     const actions = await decoded.getActions();
     const head = (await eos.getInfo(true)).head_block_num;
     const block = await eos.getBlock(head);
@@ -172,7 +189,6 @@ class ActionContainer extends Component {
       }
     });
     const canvas = this.refs.canvas;
-    const ctx = canvas.getContext("2d");
     QRCode.toCanvas(canvas, uriFormatHack, { scale: 8 }, function (error) {
       if (error) console.error(error)
     });
@@ -183,6 +199,8 @@ class ActionContainer extends Component {
         background: false,
         url: cb
       },
+      chain,
+      chainId,
       contract: action.account,
       decoded: {
         actions,
@@ -197,95 +215,49 @@ class ActionContainer extends Component {
       uriParts
     });
   }
-
   copyToClipboard = (e) => {
     this.textArea.select();
     document.execCommand('copy');
     e.target.focus();
   };
-
   render() {
     const {
-      abi,
-      action,
-      contract,
+      chain,
+      chainId,
       decoded,
-      fieldsMatchSigner,
-      fieldsPromptSigner,
       loading,
-      raw,
       uri,
-      uriError,
       uriParts,
     } = this.state;
     const {
       actions,
-      tx,
       callback
     } = decoded;
     return (
       <Container className="App" style={{ paddingTop: "1em" }}>
-        <Segment attached="top" inverted color="blue">
-          <Header size="large">
-            <Icon name="linkify" />
-            <Header.Content>
-              eosio.to
-              <Header.Subheader style={{ color: '#ffffff' }}>
-                Signing Request Processing Service
-              </Header.Subheader>
-            </Header.Content>
-          </Header>
-        </Segment>
+        <GlobalHeader />
         <Segment attached loading={loading}>
           <Grid stackable>
             <Grid.Row>
               <Grid.Column width={10}>
-                {(!loading)
-                  ? (
-                    <Segment>
-                      <Header size="large">
-                        <Icon name="info circle" style={{ verticalAlign: 'top' }} />
-                        <Header.Content>
-                          A Signing Request has been triggered.
-                          <Header.Subheader style={{ padding: '1em 0' }}>
-                            <Label as='a' href={`eosio:${uriParts[1]}`}>
-                              <Icon name="linkify" />
-                              eosio:{uriParts[1]}
-                            </Label>
-                          </Header.Subheader>
-                          <Header.Subheader>
-                            Not working? Make sure you have an
-                            {' '}
-                            <a href="#wallets">
-                              EEP-6 compatible wallet
-                            </a>
-                            {' '}
-                            installed.
-                          </Header.Subheader>
-                        </Header.Content>
-                      </Header>
-                    </Segment>
-                  )
-                  : false
-                }
-                <Segment secondary>
+                <RequestMessageTriggered
+                  loading={loading}
+                  uriParts={uriParts}
+                />
+                <Segment secondary stacked>
                   <Header>
                     Request Details
                   </Header>
-                  <p>This signing request contains {actions.length} action(s).</p>
-                  {actions.map((action) => (
-                    <Table definition>
-                      <Table.Body>
-                        {Object.keys(action).map((param) => (
-                          <Table.Row>
-                            <Table.Cell>{param}</Table.Cell>
-                            <Table.Cell><pre>{JSON.stringify(action[param], null, 2)}</pre></Table.Cell>
-                          </Table.Row>
-                        ))}
-                      </Table.Body>
-
-                    </Table>
-                  ))}
+                  <RequestDetailBlockchain
+                    chain={chain}
+                    chainId={chainId}
+                  />
+                  <RequestDetailActions
+                    actions={actions}
+                  />
+                  <RequestDetailCallback
+                    callback={callback}
+                  />
                 </Segment>
               </Grid.Column>
               <Grid.Column width={6}>
@@ -298,21 +270,9 @@ class ActionContainer extends Component {
                 <Container textAlign="center">
                   <canvas ref="canvas" />
                 </Container>
-                <Segment stacked>
-                  <Header>
-                    Modify & Share
-                    <Header.Subheader>
-                      Edit this signing request in the eosio-uri-builder or copy one of the links below to share.
-                    </Header.Subheader>
-                  </Header>
-                  <Button
-                    as="a"
-                    content="Edit in URI Builder"
-                    color="green"
-                    icon="edit"
-                    href={`https://greymass.github.io/eosio-uri-builder/${uriParts[1]}`}
-                  />
-                </Segment>
+                <RequestHandlerURIBuilder
+                  uriParts={uriParts}
+                />
                 <Form>
                   <Segment secondary>
                     <Form.Field>
@@ -367,25 +327,11 @@ class ActionContainer extends Component {
             </Grid.Row>
           </Grid>
         </Segment>
-        <Segment attached="bottom" id="wallets">
-          <Header>
-            EEP-6 Compatible Wallets
-            <Header.Subheader>
-              The <a href="$">EEP-6 standard</a> is a communication layer any wallet can adopt. Encourage your favorite wallet developer to implement this standard or download one of the wallets below.
-            </Header.Subheader>
-          </Header>
-        </Segment>
-        <Segment basic style={{ padding: '2em 0 '}} textAlign="center">
-          <Header size="small">
-            eosio.to
-            <Header.Subheader>
-              a <a href="https://greymass.com">greymass</a> project
-            </Header.Subheader>
-          </Header>
-        </Segment>
+        <GlobalWallets />
+        <GlobalFooter />
       </Container>
     );
   }
 }
 
-export default ActionContainer;
+export default RequestContainer;
