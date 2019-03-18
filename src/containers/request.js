@@ -28,7 +28,7 @@ import RequestMessageTriggered from '../components/Request/Message/Triggered';
 const { SigningRequest } = require("eosio-uri");
 
 const eosjs = require('eosjs')
-const eos = eosjs({
+let eos = eosjs({
   httpEndpoint: 'https://eos.greymass.com'
 });
 
@@ -93,6 +93,17 @@ const chainAliases = [
   ['BEOS','b912d19a6abd2b1b05611ae5be473355d64d95aeff0c09bedc8c166cd6468fe4'], // 0x09
 ];
 
+const chainAPIs = {
+  'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906': 'https://eos.greymass.com',
+  '4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11': 'https://telos.greymass.com',
+  '038f4b0fc8ff18a4f0842a8f0564611f6e96e8535901dd45e43ac8691a1c4dca': 'http://jungle.cryptolions.io:18888',
+  '5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191': 'https://kylin.eoscanada.com:443',
+  '73647cde120091e0a4b85bced2f3cfdb3041e266cbbe95cee59b73235a1b3b6f': 'https://api.worbli.io',
+  'd5a3d18fbb3c084e3b1f3fa98c21014b5f3db536cc15d08f9f6479517c6a3d86': 'https://hapi.bos.eosrio.io',
+  'cfe6486a83bad4962f232d48003b1824ab5665c36778141034d75e57b956e422': 'https://fullnode.meet.one',
+  'b042025541e25a472bffde2d62edd457b7e70cee943412b1ea0f044f88591664': 'https://ireland-history.insights.network',
+  'b912d19a6abd2b1b05611ae5be473355d64d95aeff0c09bedc8c166cd6468fe4': 'https://api.beos.world',
+}
 
 class RequestContainer extends Component {
   constructor(props) {
@@ -171,6 +182,8 @@ class RequestContainer extends Component {
     const uriParts = uriFormatHack.split("://");
     const decoded = SigningRequest.from(uriFormatHack, opts);
     const [chain, chainId] = this.getChain(decoded);
+    const httpEndpoint = chainAPIs[chainId];
+    eos = eosjs({ httpEndpoint });
     const actions = await decoded.getActions();
     const head = (await eos.getInfo(true)).head_block_num;
     const block = await eos.getBlock(head);
