@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Segment, Table } from 'semantic-ui-react';
+import { Container, Header, Segment, Table } from 'semantic-ui-react';
 
 class ActionRequestDetailActions extends Component {
   render() {
@@ -8,24 +8,26 @@ class ActionRequestDetailActions extends Component {
     } = this.props;
     if (!actions) return false;
     return (
-      <Segment>
+      <Segment attached>
         <Header size="small">
           Actions
         </Header>
         <p>This signing request contains {actions.length} action(s).</p>
-        {actions.map((action, idx) => (
-          <Table definition key={idx}>
-            <Table.Body>
-              {Object.keys(action).map((param) => (
-                <Table.Row key={param}>
-                  <Table.Cell>{param}</Table.Cell>
-                  <Table.Cell><pre>{JSON.stringify(action[param], null, 2)}</pre></Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
+        <Container style={{ overflowX: 'scroll' }}>
+          {actions.map((action, idx) => (
+            <Table definition key={idx}>
+              <Table.Body>
+                {Object.keys(action).map((param) => (
+                  <Table.Row key={param}>
+                    <Table.Cell collapsing textAlign="right">{param}</Table.Cell>
+                    <Table.Cell><pre>{JSON.stringify(action[param], null, 2)}</pre></Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
 
-          </Table>
-        ))}
+            </Table>
+          ))}
+        </Container>
       </Segment>
 
     );
