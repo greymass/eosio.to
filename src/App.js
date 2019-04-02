@@ -7,7 +7,7 @@ export default class App extends Component {
   render() {
     return (
       <Router>
-        <div>
+        <div style={{ background: '#f3f4f5' }}>
           <Route exact path="/:uri" component={RequestContainer}/>
         </div>
       </Router>
