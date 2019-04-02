@@ -175,12 +175,8 @@ class RequestContainer extends Component {
     const {
       authorization
     } = this.state;
-    let uriFormatHack = uri;
-    if(uri.substring(0, 8) !== 'eosio://') {
-      uriFormatHack = uriFormatHack.replace(':', '://');
-    }
-    const uriParts = uriFormatHack.split("://");
-    const decoded = SigningRequest.from(uriFormatHack, opts);
+    const uriParts = uri.split("://");
+    const decoded = SigningRequest.from(uri, opts);
     const [chain, chainId] = this.getChain(decoded);
     const httpEndpoint = chainAPIs[chainId];
     eos = eosjs({ httpEndpoint });
@@ -202,7 +198,9 @@ class RequestContainer extends Component {
       }
     });
     const canvas = this.refs.canvas;
-    QRCode.toCanvas(canvas, uriFormatHack, { scale: 8 }, function (error) {
+    QRCode.toCanvas(canvas, uri, {
+      scale: 6
+    }, function (error) {
       if (error) console.error(error)
     });
     // window.location.replace(`eosio://${uriParts[1]}`);
@@ -247,9 +245,9 @@ class RequestContainer extends Component {
       callback
     } = decoded;
     return (
-      <Container className="App" style={{ paddingTop: "1em" }}>
+      <Container className="App">
         <GlobalHeader />
-        <Segment attached loading={loading}>
+        <Segment loading={loading} style={{ marginTop: 0 }}>
           <Grid stackable>
             <Grid.Row>
               <Grid.Column width={10}>
