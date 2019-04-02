@@ -4,12 +4,12 @@ import { Header, Icon, Segment } from 'semantic-ui-react';
 class GlobalHeader extends Component {
   render() {
     return (
-      <Segment attached="top" inverted color="blue">
+      <Segment basic style={{ marginBottom: 0 }}>
         <Header size="large">
           <Icon name="linkify" />
           <Header.Content>
-            eosio.to
-            <Header.Subheader style={{ color: '#ffffff' }}>
+            EOSIO.TO
+            <Header.Subheader>
               Signing Request Processing Service
             </Header.Subheader>
           </Header.Content>

@@ -9,7 +9,7 @@ class ActionRequestDetailBlockchain extends Component {
     } = this.props;
     if (!chain) return false;
     return (
-      <Segment>
+      <Segment attached="top">
         <Header size="small">
           Blockchain
         </Header>

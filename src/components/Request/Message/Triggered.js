@@ -9,20 +9,15 @@ class ActionMessageTriggered extends Component {
     } = this.props;
     if (loading) return false;
     return (
-      <Segment stacked>
+      <Segment color="blue" inverted stacked>
         <Header size="large">
-          <Icon name="info circle" style={{ verticalAlign: 'top' }} />
+          <Icon name="info circle" />
           <Header.Content>
             A Signing Request has been triggered.
-            <Header.Subheader style={{ padding: '1em 0' }}>
-              <Label as='a' href={`eosio:${uriParts[1]}`}>
-                eosio:{uriParts[1]}
-              </Label>
-            </Header.Subheader>
-            <Header.Subheader>
+            <Header.Subheader style={{ color: '#fff' }}>
               Not working? Make sure you have an
               {' '}
-              <a href="#wallets">
+              <a href="#wallets" style={{ color: '#fff', textDecoration: 'underline' }}>
                 EEP-6 compatible wallet
               </a>
               {' '}

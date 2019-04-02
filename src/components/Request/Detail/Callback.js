@@ -7,7 +7,7 @@ class ActionRequestDetailBlockchain extends Component {
       callback,
     } = this.props;
     return (
-      <Segment>
+      <Segment attached="bottom">
         <Header size="small">
           Callback
         </Header>
@@ -15,7 +15,7 @@ class ActionRequestDetailBlockchain extends Component {
           ? (
             <React.Fragment>
               <p>
-                A callback URL exists within this signing request. Upon completion, clients will issue a callback to the following URL.
+                A callback URL exists within this signing request. The URL shown below is intended to be loaded after the transaction has been signed.
               </p>
               <p>
                 {callback}
