@@ -9,6 +9,7 @@ import {
   Form,
   Grid,
   Header,
+  Modal,
   Segment,
   TextArea
 } from 'semantic-ui-react';
@@ -231,6 +232,15 @@ class RequestContainer extends Component {
     document.execCommand('copy');
     e.target.focus();
   };
+  onMount = () => {
+    const { uri } = this.state;
+    const { canvasfull } = this.refs;
+    QRCode.toCanvas(canvasfull, uri, {
+      width: 800
+    }, function (error) {
+      if (error) console.error(error)
+    });
+  }
   render() {
     const {
       chain,
@@ -280,6 +290,22 @@ class RequestContainer extends Component {
                 </Header>
                 <Container textAlign="center">
                   <canvas ref="canvas" />
+                  <Modal
+                    centered={false}
+                    closeIcon={true}
+                    onMount={this.onMount}
+                    size="large"
+                    trigger={(
+                      <Button
+                        content="View Larger QR Code"
+                        icon="qrcode"
+                      />
+                    )}
+                  >
+                    <Container textAlign="center">
+                      <canvas ref="canvasfull"></canvas>
+                    </Container>
+                  </Modal>
                 </Container>
                 <RequestHandlerURIBuilder
                   uriParts={uriParts}
