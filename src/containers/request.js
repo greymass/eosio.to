@@ -176,7 +176,7 @@ class RequestContainer extends Component {
     const {
       authorization
     } = this.state;
-    const uriParts = uri.split("://");
+    const uriParts = uri.split(":");
     const decoded = SigningRequest.from(uri, opts);
     const [chain, chainId] = this.getChain(decoded);
     const httpEndpoint = chainAPIs[chainId];
@@ -185,7 +185,7 @@ class RequestContainer extends Component {
     const head = (await eos.getInfo(true)).head_block_num;
     const block = await eos.getBlock(head);
     const tx = await decoded.getTransaction(authorization, block);
-    const cb = decoded.data.callback.url;
+    const { callback } = decoded.data;
     const action = actions[0];
     const fieldsMatchSigner = {};
     const fieldsPromptSigner = {};
@@ -207,17 +207,14 @@ class RequestContainer extends Component {
     // window.location.replace(`eosio://${uriParts[1]}`);
     this.setState({
       action: action.name,
-      callback: {
-        background: false,
-        url: cb
-      },
+      callback,
       chain,
       chainId,
       contract: action.account,
       decoded: {
         actions,
         tx,
-        callback: cb,
+        callback,
       },
       fields: Object.assign({}, action.data),
       fieldsMatchSigner,
