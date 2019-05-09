@@ -321,7 +321,7 @@ class RequestContainer extends Component {
                       content="Open"
                       color="blue"
                       icon="external"
-                      href={`eosio://${uriParts[1]}`}
+                      href={`eosio:${uriParts[1]}`}
                       size="small"
                     />
                     <Button
