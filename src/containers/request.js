@@ -282,7 +282,7 @@ class RequestContainer extends Component {
                 <Header>
                   QR Code
                   <Header.Subheader>
-                    Scanning this QR code with a EEP-6 enabled mobile wallet will prompt to sign this request.
+                    Scanning this QR code with a EEP-7 enabled mobile wallet will prompt to sign this request.
                   </Header.Subheader>
                 </Header>
                 <Container textAlign="center">

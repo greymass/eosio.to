@@ -18,7 +18,7 @@ class ActionMessageTriggered extends Component {
               Not working? Make sure you have an
               {' '}
               <a href="#wallets" style={{ color: '#fff', textDecoration: 'underline' }}>
-                EEP-6 compatible wallet
+                EEP-7 compatible wallet
               </a>
               {' '}
               installed.
