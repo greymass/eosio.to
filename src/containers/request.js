@@ -204,7 +204,7 @@ class RequestContainer extends Component {
     }, function (error) {
       if (error) console.error(error)
     });
-    // window.location.replace(`eosio://${uriParts[1]}`);
+    window.location.replace(`eosio:${uriParts[1]}`);
     this.setState({
       action: action.name,
       callback,
