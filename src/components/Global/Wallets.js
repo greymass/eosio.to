@@ -13,14 +13,14 @@ class GlobalWallets extends Component {
         </Header>
         <Card
           as="a"
-          href="https://github.com/greymass/eos-voter/releases/tag/v0.9.0-anchor"
+          href="https://github.com/greymass/eos-voter/releases/tag/v1.0.0-rc1"
           raised
         >
           <Image src="https://i.imgur.com/U972tzQ.png" />
           <Card.Content>
             <Card.Header>Anchor BETA</Card.Header>
             <Card.Meta>
-              Requires v0.9.0+
+              Requires v1.0.0-RC1+
             </Card.Meta>
           </Card.Content>
           <Card.Content extra>
