@@ -26,7 +26,7 @@ import RequestDetailCallback from '../components/Request/Detail/Callback';
 import RequestHandlerURIBuilder from '../components/Request/Handler/URIBuilder';
 import RequestMessageTriggered from '../components/Request/Message/Triggered';
 
-const { SigningRequest } = require("eosio-uri");
+const { SigningRequest } = require("eosio-signing-request");
 
 const eosjs = require('eosjs')
 let eos = eosjs({
@@ -115,7 +115,7 @@ class RequestContainer extends Component {
     const { decode, props } = this;
     const { match } = props;
     if (match && match.params && match.params.uri) {
-      const uri = `eosio:${match.params.uri}`;
+      const uri = `esr:${match.params.uri}`;
       this.setState({
         loading: true,
         uri
@@ -181,10 +181,12 @@ class RequestContainer extends Component {
     const [chain, chainId] = this.getChain(decoded);
     const httpEndpoint = chainAPIs[chainId];
     eos = eosjs({ httpEndpoint });
-    const actions = await decoded.getActions();
     const head = (await eos.getInfo(true)).head_block_num;
     const block = await eos.getBlock(head);
-    const tx = await decoded.getTransaction(authorization, block);
+    const abis = await decoded.fetchAbis();
+    const resolved = decoded.resolve(abis, authorization, block);
+    const { actions } = resolved.transaction;
+    const tx = resolved.transaction
     const { callback } = decoded.data;
     const action = actions[0];
     const fieldsMatchSigner = {};
@@ -204,7 +206,7 @@ class RequestContainer extends Component {
     }, function (error) {
       if (error) console.error(error)
     });
-    window.location.replace(`eosio:${uriParts[1]}`);
+    window.location.replace(`esr:${uriParts[1]}`);
     this.setState({
       action: action.name,
       callback,
@@ -282,7 +284,7 @@ class RequestContainer extends Component {
                 <Header>
                   QR Code
                   <Header.Subheader>
-                    Scanning this QR code with a EEP-7 enabled mobile wallet will prompt to sign this request.
+                    Scanning this QR code with a ESR enabled mobile wallet will prompt to sign this request.
                   </Header.Subheader>
                 </Header>
                 <Container textAlign="center">
@@ -310,7 +312,7 @@ class RequestContainer extends Component {
                 <Form>
                   <Segment secondary>
                     <Form.Field>
-                      <label>EOSIO URI Link</label>
+                      <label>ESR Link</label>
                       <TextArea
                         ref="uriLink"
                         value={uri}
@@ -321,7 +323,7 @@ class RequestContainer extends Component {
                       content="Open"
                       color="blue"
                       icon="external"
-                      href={`eosio:${uriParts[1]}`}
+                      href={`esr:${uriParts[1]}`}
                       size="small"
                     />
                     <Button
@@ -334,7 +336,7 @@ class RequestContainer extends Component {
                   </Segment>
                   <Segment secondary>
                     <Form.Field>
-                      <label>HTTPS Link (EOSIO URI via redirection)</label>
+                      <label>HTTPS Link (ESR URI via redirection)</label>
                       <TextArea
                         ref="httpsLink"
                         value={`${uriProxy}${uriParts[1]}`}

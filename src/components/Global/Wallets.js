@@ -6,9 +6,9 @@ class GlobalWallets extends Component {
     return (
       <Segment attached="bottom" id="wallets" padded>
         <Header as="h2" size="large">
-          EEP-7 Compatible Wallets
+          ESR Compatible Wallets
           <Header.Subheader>
-            The <a href="https://github.com/greymass/EEPs/blob/eep-x/EEPS/eep-7.md">EEP-7 standard</a> is a communication layer any wallet can adopt. Encourage your favorite wallet developer to implement this standard or download one of the wallets below.
+            The <a href="https://github.com/eosio-eps/EEPs/blob/master/EEPS/eep-7.md">ESR standard</a> is a communication layer any wallet can adopt. Encourage your favorite wallet developer to implement this standard or download one of the wallets below.
           </Header.Subheader>
         </Header>
         <Card
