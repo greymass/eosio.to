@@ -15,6 +15,10 @@ import {
 } from 'semantic-ui-react';
 
 import ReactJson from 'react-json-view';
+import { JsonRpc, Api, Serialize } from 'eosjs'
+import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
+import ScatterJS from '@scatterjs/core';
+import ScatterEOS from '@scatterjs/eosjs2'
 
 import GlobalHeader from '../components/Global/Header';
 import GlobalFooter from '../components/Global/Footer';
@@ -26,11 +30,58 @@ import RequestDetailCallback from '../components/Request/Detail/Callback';
 import RequestHandlerURIBuilder from '../components/Request/Handler/URIBuilder';
 import RequestMessageTriggered from '../components/Request/Message/Triggered';
 
+const { convertLegacyPublicKeys } = require('eosio-signing-request/node_modules/eosjs/dist/eosjs-numeric');
+
+ScatterJS.plugins( new ScatterEOS() );
+
 const { SigningRequest } = require("eosio-signing-request");
 
-const eosjs = require('eosjs')
-let eos = eosjs({
-  httpEndpoint: 'https://eos.greymass.com'
+// A custom cosigner AuthorityProvider for EOSJS v2
+// This provider overrides the checks on all keys,
+// allowing a partially signed transaction to be
+// broadcast to the API node.
+class CosignAuthorityProvider {
+  async getRequiredKeys(args) {
+    const { transaction } = args;
+    // Iterate over the actions and authorizations
+    transaction.actions.forEach((action, ti) => {
+      action.authorization.forEach((auth, ai) => {
+        // If the authorization matches the expected cosigner
+        // then remove it from the transaction while checking
+        // for what public keys are required
+        if (
+          auth.actor === 'greymassfuel'
+          && auth.permission === 'cosign'
+        ) {
+          delete transaction.actions[ti].authorization.splice(ai, 1)
+        }
+      })
+    });
+    return convertLegacyPublicKeys((await rpc.fetch('/v1/chain/get_required_keys', {
+      transaction,
+      available_keys: args.availableKeys,
+    })).required_keys);
+  }
+}
+
+const tempSigProvider = new JsSignatureProvider([])
+let rpc = new JsonRpc('https://eos.greymass.com')
+let eos = new Api({
+    rpc,
+    signatureProvider: tempSigProvider,
+    textDecoder: new TextDecoder(),
+    textEncoder: new TextEncoder(),
+})
+
+let scatterNetwork = ScatterJS.Network.fromJson({
+    blockchain: 'eos',
+    chainId: 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+});
+
+
+let scatter = ScatterJS.eos(scatterNetwork, Api, {
+  authorityProvider: new CosignAuthorityProvider(),
+  rpc
 });
 
 const uriProxy = 'http://eosio.to/';
@@ -61,6 +112,7 @@ const initialState = {
   uriParts: []
 };
 
+
 // opts for the signing request
 const zlib = require('zlib');
 const opts = {
@@ -76,7 +128,7 @@ const opts = {
   // provider to retrieve contract abi
   abiProvider: {
       getAbi: async (account) => {
-          return (await eos.getAbi(account)).abi
+          return (await rpc.get_abi(account)).abi
       }
   }
 }
@@ -109,11 +161,18 @@ const chainAPIs = {
 class RequestContainer extends Component {
   constructor(props) {
     super(props)
+    this.detect = setInterval(() => {
+      if (ScatterJS.identity) {
+        this.setState({ scatterAccount: ScatterJS.account('eos') })
+        clearInterval(this.detect)
+      }
+    }, 100)
     this.state = Object.assign({}, initialState);
   }
   componentWillMount() {
     const { decode, props } = this;
     const { match } = props;
+
     if (match && match.params && match.params.uri) {
       const uri = `esr:${match.params.uri}`;
       this.setState({
@@ -133,7 +192,8 @@ class RequestContainer extends Component {
     if (
       this.state.contract !== nextState.contract
     ) {
-      eos.getAbi(nextState.contract).then((result) => {
+      rpc.get_abi(nextState.contract).then((result) => {
+        console.log(result)
         this.setState({ abi: result.abi });
       });
     }
@@ -142,18 +202,20 @@ class RequestContainer extends Component {
       && this.state.action !== nextState.action
     ) {
       const { abi, action } = nextState;
-      const { structs } = abi;
-      const struct = find(structs, { name: action });
-      if (struct) {
-        const { fields } = struct;
-        const defaultFields = {};
-        fields.forEach((field) => {
-          defaultFields[field.name] = '';
-        });
-        this.setState({
-          uri: undefined,
-          fields: defaultFields
-        });
+      if (abi) {
+        const { structs } = abi;
+        const struct = find(structs, { name: action });
+        if (struct) {
+          const { fields } = struct;
+          const defaultFields = {};
+          fields.forEach((field) => {
+            defaultFields[field.name] = '';
+          });
+          this.setState({
+            uri: undefined,
+            fields: defaultFields
+          });
+        }
       }
     }
   }
@@ -180,9 +242,25 @@ class RequestContainer extends Component {
     const decoded = SigningRequest.from(uri, opts);
     const [chain, chainId] = this.getChain(decoded);
     const httpEndpoint = chainAPIs[chainId];
-    eos = eosjs({ httpEndpoint });
-    const head = (await eos.getInfo(true)).head_block_num;
-    const block = await eos.getBlock(head);
+    // Reinitialize EOSJS
+    rpc = new JsonRpc(httpEndpoint)
+    eos = new Api({
+        rpc,
+        signatureProvider: tempSigProvider,
+        textDecoder: new TextDecoder(),
+        textEncoder: new TextEncoder(),
+    })
+    // Reinitialize Scatter
+    scatterNetwork = ScatterJS.Network.fromJson({
+        blockchain: chain.toLowerCase(),
+        chainId: chainId,
+    });
+    scatter = ScatterJS.eos(scatterNetwork, Api, {
+      authorityProvider: new CosignAuthorityProvider(),
+      rpc
+    });
+    const head = (await rpc.get_info()).head_block_num;
+    const block = await rpc.get_block(head);
     const abis = await decoded.fetchAbis();
     const resolved = decoded.resolve(abis, authorization, block);
     const { actions } = resolved.transaction;
@@ -206,7 +284,7 @@ class RequestContainer extends Component {
     }, function (error) {
       if (error) console.error(error)
     });
-    window.location.replace(`esr:${uriParts[1]}`);
+    // window.location.replace(`esr:${uriParts[1]}`);
     this.setState({
       action: action.name,
       callback,
@@ -240,12 +318,48 @@ class RequestContainer extends Component {
       if (error) console.error(error)
     });
   }
+  scatterLogin = async () => {
+    const connected = await ScatterJS.connect('eosio.to', { scatterNetwork })
+    if(!connected) return false;
+    await ScatterJS.login({accounts:[ scatterNetwork ]})
+  }
+  scatterLogout = async () => {
+    this.setState({ scatterAccount: null })
+    await ScatterJS.logout()
+  }
+  useScatter = async () => {
+    const { decoded } = this.state;
+    this.setState({
+      scatterError: null,
+      scatterResults: null
+    })
+    scatter.transact({
+      actions: decoded.actions
+    }, {
+      blocksBehind: 3,
+      expireSeconds: 30,
+    }).then((result) => {
+      this.setState({
+        scatterError: null,
+        scatterResults: result
+      })
+    }).catch((error) => {
+      this.setState({
+        scatterError: error,
+        scatterResults: null
+      })
+    });
+
+  }
   render() {
     const {
       chain,
       chainId,
       decoded,
       loading,
+      scatterAccount,
+      scatterError,
+      scatterResults,
       uri,
       uriParts,
     } = this.state;
@@ -253,6 +367,7 @@ class RequestContainer extends Component {
       actions,
       callback
     } = decoded;
+    console.log(scatterError)
     return (
       <Container className="App">
         <GlobalHeader />
@@ -261,8 +376,16 @@ class RequestContainer extends Component {
             <Grid.Row>
               <Grid.Column width={10}>
                 <RequestMessageTriggered
+                  chain={chain}
                   loading={loading}
                   uriParts={uriParts}
+                  useAnchor={`esr:${uriParts[1]}`}
+                  useScatter={this.useScatter}
+                  scatterAccount={scatterAccount}
+                  scatterError={scatterError}
+                  scatterResults={scatterResults}
+                  scatterLogin={this.scatterLogin}
+                  scatterLogout={this.scatterLogout}
                 />
                 <Segment secondary stacked>
                   <Header>
