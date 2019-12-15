@@ -286,7 +286,9 @@ class RequestContainer extends Component {
     });
     // window.location.replace(`esr:${uriParts[1]}`);
     this.setState({
+      abis,
       action: action.name,
+      block,
       callback,
       chain,
       chainId,
@@ -300,6 +302,7 @@ class RequestContainer extends Component {
       fieldsMatchSigner,
       fieldsPromptSigner,
       loading: false,
+      resolved,
       raw: decoded,
       uriParts
     });
@@ -328,14 +331,15 @@ class RequestContainer extends Component {
     await ScatterJS.logout()
   }
   useScatter = async () => {
-    const { decoded } = this.state;
+    const { abis, raw, resolved, block } = this.state;
+    const { authority, name } = this.state.scatterAccount
+    const tx = await raw.resolve(abis, { actor: name, permission: authority }, block);
     this.setState({
       scatterError: null,
       scatterResults: null
     })
-    scatter.transact({
-      actions: decoded.actions
-    }, {
+    console.log(tx)
+    scatter.transact(tx.transaction, {
       blocksBehind: 3,
       expireSeconds: 30,
     }).then((result) => {
