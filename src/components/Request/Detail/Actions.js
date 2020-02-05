@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Container, Header, Segment, Table } from 'semantic-ui-react';
 
+import ActionRequestDetailActionsFuel from './Actions/Fuel';
+import ActionRequestDetailActionsGeneric from './Actions/Generic';
+
 class ActionRequestDetailActions extends Component {
   render() {
     const {
@@ -14,19 +17,25 @@ class ActionRequestDetailActions extends Component {
         </Header>
         <p>This signing request contains {actions.length} action(s).</p>
         <Container style={{ overflowX: 'scroll' }}>
-          {actions.map((action, idx) => (
-            <Table definition key={idx}>
-              <Table.Body>
-                {Object.keys(action).map((param) => (
-                  <Table.Row key={param}>
-                    <Table.Cell collapsing textAlign="right">{param}</Table.Cell>
-                    <Table.Cell><pre>{JSON.stringify(action[param], null, 2)}</pre></Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-
-            </Table>
-          ))}
+          {actions.map((action, idx) => {
+            if (
+              ['greymassnoop', 'greymassfuel'].includes(action.account)
+              && ['cosign', 'noop'].includes(action.name)
+            ) {
+              return (
+                <ActionRequestDetailActionsFuel
+                  action={action}
+                  idx={idx}
+                />
+              );
+            }
+            return (
+              <ActionRequestDetailActionsGeneric
+                action={action}
+                idx={idx}
+              />
+            );
+          })}
         </Container>
       </Segment>
 

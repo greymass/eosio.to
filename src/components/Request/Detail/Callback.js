@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Header, Label, Segment } from 'semantic-ui-react';
 
-class ActionRequestDetailBlockchain extends Component {
+class ActionRequestDetailCallback extends Component {
   render() {
     const {
       callback,
@@ -17,53 +17,80 @@ class ActionRequestDetailBlockchain extends Component {
       );
     }
     const url = new URL(callback.url);
-    const hasTx = (callback.url.includes('{{tx}}'));
-    const hasBn = (callback.url.includes('{{bn}}'));
-    const hasSig = (callback.url.includes('{{sig}}'));
+    /** The first signature. */
+    const hasSig = callback.url.includes('{{sig}}');
+    /** Transaction ID as HEX-encoded string. */
+    const hasTx = callback.url.includes('{{tx}}');
+    /** Block number hint (only present if transaction was broadcast). */
+    const hasBn = callback.url.includes('{{bn}}');
+    /** Signer authority, aka account name. */
+    const hasSa = callback.url.includes('{{sa}}');
+    /** Signer permission, e.g. "active". */
+    const hasSp = callback.url.includes('{{sp}}');
+    /** Reference block num used when resolving request. */
+    const hasRbn = callback.url.includes('{{rbn}}');
+    /** Reference block id used when resolving request. */
+    const hasRid = callback.url.includes('{{rid}}');
+    /** The originating signing request packed as a uri string. */
+    const hasReq = callback.url.includes('{{req}}');
+    /** Expiration time used when resolving request. */
+    const hasEx = callback.url.includes('{{ex}}');
+    const anyData = (hasSig || hasTx || hasBn || hasSa || hasSp || hasRbn || hasRid || hasReq || hasEx)
     return (
-      <Segment attached="bottom">
+      <Segment style={{ marginTop: '1em' }}>
         <Header size="small">
           Callback
         </Header>
-          <Form>
-            <p>
-              A callback URL exists within this signing request. The URL shown below is intended to be loaded after the transaction has been signed.
-            </p>
-            <Form.Field>
-              <label>Callback URL</label>
-              <Form.Input value={callback.url} />
-            </Form.Field>
-            <p>
-              {(callback.background)
-                ? 'This callback URL will be executed in the background with no user interaction.'
-                : 'This callback URL will be opened after the transaction has been completed in the users default web browser.'
-              }
-            </p>
-            <p>
-              The following public information will be transmitted in the callback:
-            </p>
-            <p>
-              {(hasTx) ? (
-                <Label>
-                  Transaction ID
-                </Label>
+        <Form>
+          <Form.Field>
+            <label>URL</label>
+            <Form.Input value={callback.url} />
+          </Form.Field>
+          <p>
+            {(callback.background)
+              ? <Label style={{ marginBottom: '0.5em' }}>Background Callback</Label>
+              : <Label style={{ marginBottom: '0.5em' }}>Foreground Callback</Label>
+            }
+          </p>
+          <p>
+            The following public information will be transmitted in the callback:
+          </p>
+          <p>
+            <Segment textAlign="center">
+              {(hasSig || callback.background) ? (
+                <Label style={{ marginBottom: '0.5em' }}>First Signature</Label>
               ) : false}
-              {(hasBn) ? (
-                <Label>
-                  Block Number
-                </Label>
+              {(hasTx || callback.background) ? (
+                <Label style={{ marginBottom: '0.5em' }}>Transaction ID</Label>
               ) : false}
-              {(hasSig) ? (
-                <Label>
-                  Signature
-                </Label>
+              {(hasBn || callback.background) ? (
+                <Label style={{ marginBottom: '0.5em' }}>Block Number Hint</Label>
               ) : false}
-              {(!hasTx && !hasBn && !hasSig) ? 'None' : false}
-            </p>
-          </Form>
+              {(hasSa || callback.background) ? (
+                <Label style={{ marginBottom: '0.5em' }}>Signer Account Name</Label>
+              ) : false}
+              {(hasSp || callback.background) ? (
+                <Label style={{ marginBottom: '0.5em' }}>Signer Permission</Label>
+              ) : false}
+              {(hasRbn || callback.background) ? (
+                <Label style={{ marginBottom: '0.5em' }}>Reference Block Number</Label>
+              ) : false}
+              {(hasRid || callback.background) ? (
+                <Label style={{ marginBottom: '0.5em' }}>Reference Block ID</Label>
+              ) : false}
+              {(hasReq || callback.background) ? (
+                <Label style={{ marginBottom: '0.5em' }}>Original Signing Request</Label>
+              ) : false}
+              {(hasEx || callback.background) ? (
+                <Label style={{ marginBottom: '0.5em' }}>Expiration Time Used</Label>
+              ) : false}
+              {(!callback.background && !anyData) ? 'None' : false}
+            </Segment>
+          </p>
+        </Form>
       </Segment>
     );
   }
 }
 
-export default ActionRequestDetailBlockchain;
+export default ActionRequestDetailCallback;

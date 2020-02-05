@@ -27,10 +27,11 @@ import GlobalWallets from '../components/Global/Wallets';
 import RequestDetailBlockchain from '../components/Request/Detail/Blockchain';
 import RequestDetailActions from '../components/Request/Detail/Actions';
 import RequestDetailCallback from '../components/Request/Detail/Callback';
+import RequestDetailFlags from '../components/Request/Detail/Flags';
 import RequestHandlerURIBuilder from '../components/Request/Handler/URIBuilder';
 import RequestMessageTriggered from '../components/Request/Message/Triggered';
 
-const { convertLegacyPublicKeys } = require('eosio-signing-request/node_modules/eosjs/dist/eosjs-numeric');
+const { convertLegacyPublicKeys } = require('eosjs/dist/eosjs-numeric');
 
 ScatterJS.plugins( new ScatterEOS() );
 
@@ -259,13 +260,15 @@ class RequestContainer extends Component {
       authorityProvider: new CosignAuthorityProvider(),
       rpc
     });
+    const broadcast = decoded.shouldBroadcast();
     const head = (await rpc.get_info()).head_block_num;
     const block = await rpc.get_block(head);
     const abis = await decoded.fetchAbis();
     const resolved = decoded.resolve(abis, authorization, block);
+
     const { actions } = resolved.transaction;
     const tx = resolved.transaction
-    const { callback } = decoded.data;
+    const callback = resolved.getCallback(['']);
     const action = actions[0];
     const fieldsMatchSigner = {};
     const fieldsPromptSigner = {};
@@ -289,6 +292,7 @@ class RequestContainer extends Component {
       abis,
       action: action.name,
       block,
+      broadcast,
       callback,
       chain,
       chainId,
@@ -357,6 +361,7 @@ class RequestContainer extends Component {
   }
   render() {
     const {
+      broadcast,
       chain,
       chainId,
       decoded,
@@ -371,7 +376,6 @@ class RequestContainer extends Component {
       actions,
       callback
     } = decoded;
-    console.log(scatterError)
     return (
       <Container className="App">
         <GlobalHeader />
@@ -402,9 +406,6 @@ class RequestContainer extends Component {
                   <RequestDetailActions
                     actions={actions}
                   />
-                  <RequestDetailCallback
-                    callback={callback}
-                  />
                 </Segment>
               </Grid.Column>
               <Grid.Column width={6}>
@@ -433,6 +434,12 @@ class RequestContainer extends Component {
                     </Container>
                   </Modal>
                 </Container>
+                <RequestDetailFlags
+                  broadcast={broadcast}
+                />
+                <RequestDetailCallback
+                  callback={callback}
+                />
                 <RequestHandlerURIBuilder
                   uriParts={uriParts}
                 />
