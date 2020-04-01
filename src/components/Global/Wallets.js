@@ -6,21 +6,21 @@ class GlobalWallets extends Component {
     return (
       <Segment attached="bottom" id="wallets" padded>
         <Header as="h2" size="large">
-          ESR Compatible Wallets
+          ESR Protocol Compatible Wallets
           <Header.Subheader>
             The <a href="https://github.com/eosio-eps/EEPs/blob/master/EEPS/eep-7.md">ESR standard</a> is a communication layer any wallet can adopt. Encourage your favorite wallet developer to implement this standard or download one of the wallets below.
           </Header.Subheader>
         </Header>
         <Card
           as="a"
-          href="https://github.com/greymass/eos-voter/releases/tag/v1.0.0-rc1"
+          href="https://github.com/greymass/eos-voter/releases/tag/v1.0.0-rc8"
           raised
         >
-          <Image src="https://i.imgur.com/U972tzQ.png" />
+          <Image src="https://greymass.com/static/d7bb592f9e38d258e4c916be2fbf3c6e/f7b46/anchor.png" />
           <Card.Content>
             <Card.Header>Anchor BETA</Card.Header>
             <Card.Meta>
-              Requires v1.0.0-RC1+
+              Requires v1.0.4-RC1+
             </Card.Meta>
           </Card.Content>
           <Card.Content extra>
