@@ -92,7 +92,7 @@ const initialState = {
   action: 'transfer',
   authorization: {
     actor: "............1",
-    permission: "............1",
+    permission: "............2",
   },
   callback: {
     background: false,
