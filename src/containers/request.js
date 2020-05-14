@@ -146,12 +146,10 @@ const chainAliases = [
   ['INSIGHTS','b042025541e25a472bffde2d62edd457b7e70cee943412b1ea0f044f88591664'], // 8
   ['BEOS','b912d19a6abd2b1b05611ae5be473355d64d95aeff0c09bedc8c166cd6468fe4'], // 9
   ['WAX','1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4'], // 10
-  ['WAXTESTNET','f16b1833c747c43682f4386fca9cbb327929334a762755ebec17f6f23c9b8a12'], // 11
+  ['PROTON','384da888112027f0321850a169f737c33e53b388aad48b5adace4bab97f437e0'], // 11
   ['FIO', '21dcae42c0182200e93f954a074011f9048a7624c6fe81d3c9541a614a88bd1c'], // 12
-  ['FIOTESTNET', 'b20901380af44ef59c5918439a1f9a41d83669020319a80574b804a5f95cbd7e'], // 13
-  ['TELOSTESTNET', '1eaa0824707c8c16bd25145493bf062aecddfeb56c736f6ba6397f3195f33c9f'], // 14
-  ['LYNX','b62febe5aadff3d5399090b9565cb420387d3c66f2ccd7c7ac1f532c4f50f573'], // no shortcut
-  ['LYNXTESTNET','f11d5128e07177823924a07df63bf59fbd07e52c44bc77d16acc1c6e9d22d37b'], // no shortcut
+  // NAMED WITHOUT ALIAS
+  ['PROTONTESTNET', '71ee83bcf52142d61019d95f9cc5427ba6a0d7ff8accd9e2088ae2abeaf3d3dd']
 ];
 
 const chainAPIs = {
@@ -171,6 +169,8 @@ const chainAPIs = {
   '1eaa0824707c8c16bd25145493bf062aecddfeb56c736f6ba6397f3195f33c9f': 'https://testnet.eos.miami',
   'b62febe5aadff3d5399090b9565cb420387d3c66f2ccd7c7ac1f532c4f50f573': 'https://lynx.greymass.com',
   'f11d5128e07177823924a07df63bf59fbd07e52c44bc77d16acc1c6e9d22d37b': 'https://lynxtestnet.greymass.com',
+  '384da888112027f0321850a169f737c33e53b388aad48b5adace4bab97f437e0': 'https://proton.greymass.com',
+  '71ee83bcf52142d61019d95f9cc5427ba6a0d7ff8accd9e2088ae2abeaf3d3dd': 'https://protontestnet.greymass.com',
 }
 
 
@@ -253,7 +253,11 @@ class RequestContainer extends Component {
           if (c.length === 1) return false;
           return c.length > 1 && c[1].toLowerCase() === chainIdValue.toLowerCase()
         })
-        return filtered[0];
+        if (filtered.length) {
+          return filtered[0];
+        } else {
+          return ['UNKNOWN', chainIdValue.toLowerCase()]
+        }
       }
 
     }
