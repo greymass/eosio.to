@@ -14,8 +14,7 @@ import {
     TextArea,
 } from 'semantic-ui-react'
 
-import ReactJson from 'react-json-view'
-import { JsonRpc, Api, Serialize } from 'eosjs'
+import { JsonRpc, Api } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 import ScatterJS from '@scatterjs/core'
 import ScatterEOS from '@scatterjs/eosjs2'
@@ -427,7 +426,7 @@ class RequestContainer extends Component {
         await ScatterJS.logout()
     }
     useScatter = async () => {
-        const { abis, raw, resolved, block } = this.state
+        const { abis, raw, block } = this.state
         const { authority, name } = this.state.scatterAccount
         const tx = await raw.resolve(
             abis,
