@@ -342,8 +342,7 @@ class RequestContainer extends Component {
         const block = await rpc.get_block(head)
         const abis = await decoded.fetchAbis()
         const resolved = decoded.resolve(abis, authorization, block)
-
-        const { actions } = resolved.transaction
+        const { actions } = resolved.resolvedTransaction
         const tx = resolved.transaction
         const callback = resolved.getCallback([
             'SIG_K1_KdNTcLLSyzUFC4AdMxEDn58X8ZN368euanvet4jucUdSPXvLkgsG32tpcqVvnDR9Xv1f7HsTm6kocjeZzFGvUSc2yCbdEA',
